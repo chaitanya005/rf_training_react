@@ -1,0 +1,14 @@
+a {
+  text-decoration: none !important;
+  color: #000 !important;
+}
+
+.navHead {
+  margin: "50px" !important;
+}
+
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1140px !important;
+  }
+}
