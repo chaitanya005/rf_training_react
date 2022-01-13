@@ -37,6 +37,18 @@ const Comments = ({ comment }) => {
                 </tr>
               </tbody>
             </table>
+            {/* <div>
+              <div style={{display: 'flex', alignItems: 'baseline', gap: '0.5rem', margin: 'px 0'}}>
+                <i class="far fa-tag" style={{color: '#57606a'}}></i>
+                <b>chaitanya005</b>
+                <div style={{color: '#57606a'}}> added the documentation label 19 minutes ago</div>
+              </div>
+              <div style={{display: 'flex', alignItems: 'baseline', gap: '0.5rem', margin: '30px 0'}} >
+              <i class="far fa-user" style={{color: '#57606a'}}></i>
+                <b>chaitanya005</b>
+                <div style={{color: '#57606a'}}> assigned this 1 minute ago</div>
+              </div>
+            </div> */}
           </div>
           <div className="col-sm-2"></div>
         </>

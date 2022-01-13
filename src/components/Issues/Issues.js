@@ -1,14 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState} from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import IssueHead from "../IssueHead";
 import Comments from "./Comments";
 import axios from "axios";
-import { useState } from "react/cjs/react.development";
-import ReactQuill, { Quill } from "react-quill"; // ES6
 import "react-quill/dist/quill.snow.css";
 import Editor from "../Editor";
-import Select from "react-select";
+import DropDown from "../DropDown";
 
 const Issues = () => {
   let { id } = useParams();
@@ -18,26 +16,13 @@ const Issues = () => {
   const navigate = useNavigate();
   const [labels, setLabels] = useState(null);
   const [users, setUsers] = useState(null);
-  const [optionUsers, setOptionUsers] = useState([]);
-  const [optionLabels, setOptionLabels] = useState([]);
 
-  const colourStyles = {
-    control: (styles) => ({
-      ...styles,
-      all: "unset",
-      fontWeight: "800",
-      fontSize: "14px",
-      padding: 0,
-    }),
-    placeholder: (styles) => ({ ...styles, color: "#57606a" }),
-    ValueContainer: (styles) => ({ ...styles, padding: 0 }),
-  };
 
   useEffect(() => {
     axios
       .get(`http://localhost:4000/issues/${id}`)
       .then((res) => {
-        console.log(res);
+        // console.log(res);
         setComments(res.data.issue);
         setLabels(res.data.labels);
         setUsers(res.data.users);
@@ -45,23 +30,6 @@ const Issues = () => {
       .catch((err) => console.log(err));
   }, []);
 
-  useEffect(() => {
-    // console.log(users, labels)
-    users &&
-      users.map((user) =>
-        setOptionUsers((prev) => [
-          ...prev,
-          { value: user.id, label: user.username },
-        ])
-      );
-    labels &&
-      labels.map((label) =>
-        setOptionLabels((prev) => [
-          ...prev,
-          { value: label.id, label: label.name },
-        ])
-      );
-  }, [users]);
 
   const handleComment = () => {
     axios
@@ -71,35 +39,33 @@ const Issues = () => {
         username: user.username,
       })
       .then((res) => {
-        console.log(res);
-        // navigate(`/issues/${id}`)
         window.location.reload();
       })
       .catch((err) => console.log(err));
   };
 
-  const handleChange = (selected, type) => {
+  const handleFilter = (selected, type) => {
     console.log(selected, type);
     if (type == "label") {
       axios
         .post("http://localhost:4000/update-label", {
-          labelId: selected.value,
+          labelId: selected,
           issueId: id,
         })
         .then((res) => {
-          console.log(res)
-          window.location.reload()
+          console.log(res);
+          window.location.reload();
         })
         .catch((err) => console.log(err));
     } else {
       axios
         .post("http://localhost:4000/update-assignee", {
-          assigneeId: selected.value,
+          assigneeId: selected,
           issueId: id,
         })
         .then((res) => {
-          console.log(res)
-          window.location.reload()
+          console.log(res);
+          window.location.reload();
         })
         .catch((err) => console.log(err));
     }
@@ -177,77 +143,27 @@ const Issues = () => {
             </table>
           </div>
           <div className="col-sm-2">
-            {/* <select
-              className="form-select"
-              id="label"
-              aria-label="Default select example"
-              style={{
-                all: "unset",
-                color: "#57606a",
-                fontWeight: 600,
-                fontSize: "14px",
-              }}
-              name="label"
-              //   onChange="handleLabel"
-            >
-              <option value={0}>Labels</option>
-            </select>
-            <hr />
-            <select
-              className="form-select"
-              id="label"
-              aria-label="Default select example"
-              style={{
-                all: "unset",
-                color: "#57606a",
-                fontWeight: 600,
-                fontSize: "14px",
-              }}
-              name="assignee"
-              //   onChange="handleLabel"
-            >
-              <option value={0}>Assignees</option>
-            </select> */}
-            <Select
-              value={optionLabels.value}
-              onChange={(value) => handleChange(value, "label")}
-              options={optionLabels}
-              placeholder="Labels"
-              styles={colourStyles}
-            />
             {comments && (
-              <p
-                style={{
-                  background: `${comments[0].label_bgColor}`,
-                  padding: "2px 8px",
-                  borderRadius: "10px",
-                  fontSize: "12px",
-                  margin: 0,
-                  marginTop: "10px",
-                  color: `${comments[0].label_fontColor}`,
-                  width: "fit-content",
-                }}
-              >
-                {" "}
-                {comments[0].label_name}
-              </p>
+              <DropDown
+                labels={labels}
+                users={users}
+                handleFilter={handleFilter}
+                name={comments[0].label_name}
+                bgColor={comments[0].label_bgColor}
+                fontColor={comments[0].label_fontColor}
+                assignee={comments[0].assignee}
+                issueDropDown={true}
+              />
             )}
-            <hr />
-            <Select
-              value={optionUsers.value}
-              onChange={(value) => handleChange(value, "Assignee")}
-              options={optionUsers}
-              placeholder="Assignee"
-              styles={colourStyles}
-            />
-            {comments && <p style={{ fontSize: "14px" }}>{comments[0].assignee}</p>}
           </div>
           {comments &&
-            comments.map((comment) => (
+            comments.map((comment) => {
+              return (
               <>
                 <Comments comment={comment} key={comment} />
               </>
-            ))}
+              )
+            })}
           <div className="col-sm-2"></div>
           <div className="col-sm-8">
             <Editor input={input} setInput={setInput} />
@@ -277,6 +193,10 @@ const Issues = () => {
         .css-1hb7zxy-IndicatorsContainer {
 					display: none;
 				}
+
+        .dropdown-toggle::after {
+          display: none;
+        }
 			`}
       </style>
     </div>

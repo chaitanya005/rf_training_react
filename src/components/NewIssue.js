@@ -25,11 +25,17 @@ const NewIssue = () => {
 	const [optionLabels, setOptionLabels] = useState([])
 	
 	const handleSubmit = () => {
+		let date = Date.now()
 		axios.post('http://localhost:4000/create-issue', {
-			input, newIssue, userName: user.username
+			input, newIssue, userName: user.username, date
 		})
 		.then(res => {
-			// console.log(res)
+			console.log(res.data.issueId)
+			// if (newIssue.label !== '0' || newIssue.assignee !== '0') {
+			// 	axios.post('http://localhost:4000/create-issue-label', {
+			// 		labelId: newIssue.label, assigneeId: newIssue.assignee, issueId: res.data.issueId, userName: user.username
+			// 	})
+			// }	
 			navigate('/')
 		})
 		.catch(err => console.log(err))
@@ -76,22 +82,6 @@ const NewIssue = () => {
 						<button className='btn btn-success btnSubmit' onClick={handleSubmit}>Submit new issue</button> 
                     </div>
                     <div className='col-sm-2'>
-						{/* <select className="form-select" aria-label="Default select example" style={{all: "unset", color: "#57606a", fontWeight: "600", fontSize: "14px"}} name="label"
-						onChange={(e) => setNewIssue({...newIssue, label: e.target.value})}>
-							<option value={0}>Labels</option>
-							{labels && labels.map(label => (
-								<option value={label.id} key={label.id}>{label.name}</option>
-							))}
-						</select>
-						<hr />
-						<select className="form-select" id="label" aria-label="Default select example" style={{all: "unset", color: "#57606a", fontWeight: "600", fontSize: "14px"}} name="assignee"
-						onChange={(e) => setNewIssue({...newIssue, assignee: e.target.value})}>
-							<option value={0}>Assignees</option>
-							{users && users.map(user => (
-								<option value={user.id} key={user.id}>{user.username}</option>
-							))}
-						</select> */}
-						{/* <hr /> */}
 						<Select
 							value={optionLabels.value}
 							onChange={(selected) => setNewIssue({...newIssue, label: selected.value})}

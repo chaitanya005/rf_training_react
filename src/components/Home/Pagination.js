@@ -1,30 +1,63 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect } from "react";
+import { useState } from "react/cjs/react.development";
 
-const Pagination = ({currPage, lastPage, totalPages}) => {
+const Pagination = ({
+  issues,
+  currPage,
+  setCurrentIssues,
+  setCurrPage,
+  issuesPerPage
+}) => {
+
+  const pageNumbers = []
+
+  if (issues) {
+    for (let i = 1; i <= Math.ceil(issues.length / issuesPerPage); i++) {
+      pageNumbers.push(i);
+    }
+  }
+
+  const handlePagination = (page) => {
+    setCurrPage(page)
+    const indexOfLastIssue = page *  issuesPerPage
+    const indexOfFirstIssue = indexOfLastIssue  - issuesPerPage
+    let paginateIssues = issues.slice(indexOfFirstIssue, indexOfLastIssue)
+    setCurrentIssues(paginateIssues)
+  }
+
   return (
     <div>
       <nav aria-label="Page navigation example">
         <ul className="pagination justify-content-center">
-          <li className="page-item disabled">
-            <a className="page-link" href="#" tabIndex="-1">
-                <span aria-hidden="true"> &laquo; </span>Previous
+          <li className={"page-item" + (currPage == 1 ? ' disabled': '')}>
+            <a
+              className="page-link"
+              onClick={() => handlePagination(currPage - 1)}
+            >
+              <span aria-hidden="true"> &laquo; </span>Previous
             </a>
           </li>
-          {totalPages && totalPages.map(page => (
-             <li className="page-item" key={page}>
-              <a 
-                href={`http://localhost:3000?page=${page}`}
-                className={"page-link" + (currPage == page ?  " page-link-active": '')}
-              >
-                {page}
-              </a>
-            </li>
-          ))}
-          <li className="page-item">
-            <a className="page-link" href="#">
+          {pageNumbers.map((page) => (
+              <li className="page-item" key={page}>
+                <a
+                  onClick={() => handlePagination(page)}
+                  className={
+                    "page-link" + (currPage == page ? " page-link-active" : "")
+                  }
+                >
+                  {page}
+                </a>
+              </li>
+            ))}
+          {issues && <li className={"page-item" + (Math.ceil(issues.length / issuesPerPage) == currPage ? ' disabled': '')}>
+            <a
+              className="page-link"
+              onClick={() => handlePagination(currPage + 1)}
+            >
               Next <span aria-hidden="true"> &raquo; </span>
             </a>
-          </li>
+          </li>}
         </ul>
       </nav>
     </div>
